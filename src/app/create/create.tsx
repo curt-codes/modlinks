@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 const recursive = Recursive({ subsets: ['latin'] })
 
 interface Submission {
-  mods: string[];
+  mods: string;
   color: string;
   yearMakeModel: string;
   websites: string;
@@ -108,7 +108,7 @@ export default function Create() {
     console.log("Submitting to API...");
 
     const mySubmission: Submission = {
-      mods: mods,
+      mods: JSON.stringify(mods),
       color: color,
       yearMakeModel: yearMakeModel,
       websites: JSON.stringify(websites),

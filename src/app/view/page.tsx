@@ -11,12 +11,16 @@ import { useSearchParams } from 'next/navigation'
 const recursive = Recursive({ subsets: ['latin'] })
 
 interface Submission {
-  mods?: string[];
+  mods?: string;
   color?: string;
   yearMakeModel?: string;
   websites?: string;
   socials?: string;
   profilePicture?: string;
+}
+
+interface Mod {
+  name?: string;
 }
 
 interface Website {
@@ -68,6 +72,9 @@ export default function View() {
   if (error) return <div>Error: {error}</div>;
   if (!submission) return <div>No data found</div>;
 
+  console.log(submission.mods);
+  const parsedMods: string[] = submission.mods ? submission.mods.split(',') : [];
+  console.log(parsedMods);
   const parsedWebsites: Website[] = submission.websites ? JSON.parse(submission.websites) : [];
   const parsedSocials: Social[] = submission.socials ? JSON.parse(submission.socials) : [];
 
@@ -105,7 +112,7 @@ export default function View() {
             <CardContent className="p-4">
               <h2 className="text-lg font-semibold mb-2">Mods</h2>
               <ul className="list-disc pl-5">
-                {Array.isArray(submission.mods) && submission.mods.map((mod, index) => (
+                {parsedMods.map((mod, index) => (
                   <li key={index} className="text-gray-600">{mod}</li>
                 ))}
               </ul>
