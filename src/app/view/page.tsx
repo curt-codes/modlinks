@@ -11,16 +11,14 @@ import { useSearchParams } from 'next/navigation'
 const recursive = Recursive({ subsets: ['latin'] })
 
 interface Submission {
-  mods?: Mod[];
+  mods?: string[];
   color?: string;
   yearMakeModel?: string;
-  websites?: Website[];
-  socials?: Social[];
+  websites?: string;
+  socials?: string;
   profilePicture?: string;
 }
-interface Mod {
-  name?: string;
-}
+
 interface Website {
   name?: string;
   url?: string;
@@ -55,16 +53,7 @@ export default function View() {
           throw new Error('Failed to fetch data');
         }
         const data: LinkData = await response.json();
-console.log("Link Data: ", data)
-console.log("Mods: ", data.submission?.mods)
-        setSubmission({
-          mods: data.submission?.mods,
-          color: data.submission?.color,
-          yearMakeModel: data.submission?.yearMakeModel,
-          websites: data.submission?.websites,
-          socials: data.submission?.socials,
-          profilePicture: data.submission?.profilePicture
-        });
+        setSubmission(data.submission || null);
       } catch (err) {
         setError('Error fetching data');
         console.error(err);
@@ -79,6 +68,9 @@ console.log("Mods: ", data.submission?.mods)
   if (error) return <div>Error: {error}</div>;
   if (!submission) return <div>No data found</div>;
 
+  const parsedWebsites: Website[] = submission.websites ? JSON.parse(submission.websites) : [];
+  const parsedSocials: Social[] = submission.socials ? JSON.parse(submission.socials) : [];
+
   return (
     <main className={recursive.className}>
       <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 flex flex-col items-center p-4">
@@ -86,7 +78,7 @@ console.log("Mods: ", data.submission?.mods)
           <div className="mb-8 flex justify-center relative">
             <div className="w-32 h-32 relative">
               <Image
-                src={submission.profilePicture || ""}
+                src={submission.profilePicture || "/default-profile.jpg"}
                 alt="Profile Picture"
                 layout="fill"
                 objectFit="cover"
@@ -113,18 +105,18 @@ console.log("Mods: ", data.submission?.mods)
             <CardContent className="p-4">
               <h2 className="text-lg font-semibold mb-2">Mods</h2>
               <ul className="list-disc pl-5">
-                {submission.mods?.map((mod, index) => (
-                  <li key={index} className="text-gray-600">{mod.name}</li>
+                {Array.isArray(submission.mods) && submission.mods.map((mod, index) => (
+                  <li key={index} className="text-gray-600">{mod}</li>
                 ))}
               </ul>
             </CardContent>
           </Card>
 
-          {/* <Card className="mb-4">
+          <Card className="mb-4">
             <CardContent className="p-4">
               <h2 className="text-lg font-semibold mb-2">Websites</h2>
               <ul className="space-y-2">
-                {submission.websites.map((site, index) => (
+                {parsedWebsites.map((site, index) => (
                   <li key={index} className="flex items-center">
                     <ExternalLink className="w-4 h-4 mr-2" />
                     <a href={site.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
@@ -140,7 +132,7 @@ console.log("Mods: ", data.submission?.mods)
             <CardContent className="p-4">
               <h2 className="text-lg font-semibold mb-2">Social Media</h2>
               <ul className="space-y-2">
-                {submission.socials.map((social, index) => (
+                {parsedSocials.map((social, index) => (
                   <li key={index} className="flex items-center">
                     <ExternalLink className="w-4 h-4 mr-2" />
                     <a href={social.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
@@ -150,7 +142,7 @@ console.log("Mods: ", data.submission?.mods)
                 ))}
               </ul>
             </CardContent>
-          </Card> */}
+          </Card>
         </div>
       </div>
     </main>

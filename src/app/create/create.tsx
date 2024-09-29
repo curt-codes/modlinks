@@ -14,8 +14,8 @@ interface Submission {
   mods: string[];
   color: string;
   yearMakeModel: string;
-  websites: { name: string; url: string; }[];
-  socials: { name: string; url: string; }[];
+  websites: string;
+  socials: string;
   profilePicture: string;
 }
 
@@ -111,8 +111,8 @@ export default function Create() {
       mods: mods,
       color: color,
       yearMakeModel: yearMakeModel,
-      websites: websites,
-      socials: socials,
+      websites: JSON.stringify(websites),
+      socials: JSON.stringify(socials),
       profilePicture: profilePicture || "no image",
     }
 
